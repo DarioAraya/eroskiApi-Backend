@@ -17,6 +17,6 @@ PROYECTO DESPLEGADO BACKEND
 https://eroski-api-backend.herokuapp.com
 
 DOCUMENTACIÓN
-https://fern-lemming-3c7.notion.site/BSale-Test-API-26123357143c43598d9403d9c4ce7529
+https://fern-lemming-3c7.notion.site/BSale-Test-API-0ce5f9dac3cc4527bcf64ae4c6ace9c7
 
 Si hay alguna duda con el código o problema al ejecutarlo, por favor contactarme a mi correo dararayag@gmail.com.
