@@ -10,7 +10,10 @@ conectando.connect((err) => {
   console.log("Conectado a la base");
 });
 
-const whiteList = ["http://localhost:3000", "https://api-eroski.herokuapp.com"];
+const whiteList = [
+  "https://api-eroski.herokuapp.com",
+  "https://localhost:3000",
+];
 
 app.use(cors({ origin: whiteList }));
 
