@@ -19,4 +19,4 @@ https://eroski-api-backend.herokuapp.com
 DOCUMENTACIÓN
 https://fern-lemming-3c7.notion.site/BSale-Test-API-56aa2969a21c44f7a3385f898a65b710
 
-Si hay alguna duda con el código o problema al ejecutarlo, por favor contactarme a mi correo dararayag@gmail.com.
+Si hay alguna duda con el código o problema al ejecutarlo, por favor contactarme a mi correo dararayag@gmail.com..
