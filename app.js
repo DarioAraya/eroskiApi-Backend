@@ -2,12 +2,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const conectando = require("./src/mysql_connector.js");
-const ejsMate = require("ejs-mate");
 const cors = require("cors");
 const eroski = require("./routes/eroskiRoutes");
-
-app.engine("ejs", ejsMate);
-app.set("view engine", "ejs");
 
 conectando.connect((err) => {
   if (err) throw err;
