@@ -33,12 +33,10 @@ module.exports.findForName = async (req, res, next) => {
   let id = req.body.id;
   //Evitar que los parametros vengan vacios
   if (!name || !id) {
-    let products = [];
-    let categories = [];
-    return res.status(400).json({
-      products,
-      categories,
-      ordenarPor,
+    return res.sendStatus(200).json({
+      // Manejo del error ERR_HTTP_HEADERS_SENT
+      status_code: 0,
+      error_msg: "Require Params Missing",
     });
   }
   try {
