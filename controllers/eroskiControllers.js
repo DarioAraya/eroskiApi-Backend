@@ -98,6 +98,7 @@ module.exports.findByCat = async (req, res, next) => {
   }
 
   try {
+    //se realiza la consulta a la base de datos ingresando la query y el id
     const query = await conectando.query(`${sql}`, [id]);
 
     if (!query || query.length === 0) {
@@ -119,10 +120,11 @@ module.exports.sortBy = async (req, res, next) => {
   if (!sortBy || sortBy.length === 0 || !id || id.length === 0) {
     return res.json({ products, categories, ordenarPor });
   }
-
+  //se llama a la funcion sortProducts añadiendo el valor en el sortBy para que nos returne la query que deseamos
   const sortSql = sortProducts(sortBy);
 
   try {
+    //se realiza la consulta a la base de datos ingresando la query y el id
     const query = await conectando.query(`${sortSql}`, [id]);
 
     if (!query || query.length === 0) {
