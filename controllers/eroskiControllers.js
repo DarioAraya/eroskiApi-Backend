@@ -1,110 +1,136 @@
 //importando metodo para conectarse a la base
 const conectando = require("../src/mysql_connector");
 
-//Querys
+//Arrays de Datos
+const products = [];
+
 const ordenarPor = ["nombreA", "nombreD", "precioA", "precioD"];
-let query = `SELECT * FROM product where category = `;
-let query2 = "SELECT * FROM category";
-let query3 = "SELECT * from product where name LIKE";
-("a");
+//Querys
+let sql = `SELECT * FROM product where category = ?`;
+let sql2 = "SELECT * FROM category";
+let sql3 = "SELECT * FROM product WHERE name LIKE ? AND category = ?";
+//Funcion para llamar a las categorias
+const getCategories = async () => {
+  const query = await conectando.query(`${sql2}`);
+  return query;
+};
+
+//Id Constante
+const defaultId = 1;
+
+//funcion para identificar cual es el orden que se eligio
+const sortProducts = (sortBy) => {
+  let sortSql = "";
+  if (sortBy === "nombreA") {
+    sortSql = `${sql} ORDER BY name`;
+  }
+
+  if (sortBy === "nombreD") {
+    sortSql = `${sql} ORDER BY name DESC`;
+  }
+
+  if (sortBy === "precioA") {
+    sortSql = `${sql} ORDER BY price DESC`;
+  }
+
+  if (sortBy === "precioD") {
+    sortSql = `${sql} ORDER BY price`;
+  }
+
+  return sortSql;
+};
+
 //Mostrar todos los productos de la categoria inicial
 module.exports.getAll = async (req, res, next) => {
-  let id = 1; //Se inicializa el id en 1 ya que es la primera categoria a mostrar
+  //llamando a la funcion que trae las categorias
+  const categories = await getCategories();
   try {
-    //se realiza la consulta a la base de datos añadiendo la query y el id
-    await conectando.query(`${query} ${id}`, async (err, products) => {
-      if (err) res.json({ status: 500, err });
-      //se la segunda consulta para traer las categorias
-      conectando.query(query2, (err, categories) => {
-        if (err) res.json({ status: 500, err });
-        res.json({ products, categories, ordenarPor });
-      });
-    });
-  } catch (error) {
-    console.log(error);
+    //se realiza la consulta a la base de datos ingresando la query y el por defecto id
+    const query = await conectando.query(`${sql}`, [defaultId]);
+    //si hay un problema con la primera query, retornar array por defecto
+    if (!query || query.length === 0) {
+      return res.json({ products, categories, ordenarPor });
+    }
+    //Si no hay problemas con la query, retornar arrays reemplazando products con el array entregado en la query
+    return res.json({ products: query, categories, ordenarPor });
+  } catch (err) {
+    console.log(err);
+    return res.json({ products, categories, ordenarPor });
   }
 };
 
 //filtrar por nombre
 module.exports.findForName = async (req, res, next) => {
   //para traer el valor de la variable name en el body
-  let name = req.body.name;
-  //para traer el valor de la variable name en el body
-  let id = req.body.id;
-  //Evitar que los parametros vengan vacios
-  if (!name || !id) {
-    return res.status(400).json({
-      status_code: 0,
-      error_msg: "Require Params Missing",
-    });
+  let { name, id } = req.body;
+  const categories = await getCategories();
+  //para evitar el error ERR_HTTP_HEADERS_SENT
+  if (!name || name.length === 0 || !id || id.length === 0) {
+    return res.json({ products, categories, ordenarPor });
   }
+
   try {
     //este if sirve para evitar un error en el input buscar, ya que poner comillas o doble comillas produce conflicto con las querys
-    if (name.includes('"')) {
-      name = name.replace(/['"]+/g, "");
+    if (name.match(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi)) {
+      name = name.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, "");
     }
-    if (name.includes("'")) {
-      name = name.replace(/["']+/g, "");
-    }
+    name = `%${name}%`;
+    //se realiza la consulta a la base de datos ingresando la query, el nombre y el id
+    const query = await conectando.query(`${sql3}`, [name, id]);
 
-    console.log(name);
-    await conectando.query(
-      //query para filtrar por nombre y mantenerse en la categoria.
-      `${query3} '%${name}%' AND category=${id}`,
-      (err, products) => {
-        if (err) res.json({ status: 500, err });
-        conectando.query(query2, (err, categories) => {
-          if (err) res.json({ status: 500, err });
-          res.json({ products, categories, ordenarPor });
-        });
-      }
-    );
+    if (!query || query.length === 0) {
+      return res.json({ products, categories, ordenarPor });
+    }
+    return res.json({ products: query, categories, ordenarPor });
   } catch (err) {
     console.log(err);
+    return res.json({ products, categories, ordenarPor });
   }
 };
 
 //filtrar por categoria
 module.exports.findByCat = async (req, res, next) => {
-  let id = req.body.id;
+  let { id } = req.body;
+  const categories = await getCategories();
+
+  if (!id || id.length === 0) {
+    return res.json({ products, categories, ordenarPor });
+  }
+
   try {
-    await conectando.query(`${query} '${id}'`, (err, products) => {
-      if (err) res.json({ status: 500, err });
-      conectando.query(query2, (err, categories) => {
-        if (err) res.json({ status: 500, err });
-        res.json({ products, categories, ordenarPor });
-      });
-    });
+    const query = await conectando.query(`${sql}`, [id]);
+
+    if (!query || query.length === 0) {
+      return res.json({ products, categories, ordenarPor });
+    }
+    return res.json({ products: query, categories, ordenarPor });
   } catch (err) {
     console.log(err);
+    return res.json({ products, categories, ordenarPor });
   }
 };
 
 //ordenar por
 module.exports.sortBy = async (req, res, next) => {
-  let sortBy = req.body.sortBy;
-  let id = req.body.id;
+  let { id, sortBy } = req.body;
+  const categories = await getCategories();
+  //modificar query3 segun el orden que se escoge
+
+  if (!sortBy || sortBy.length === 0 || !id || id.length === 0) {
+    return res.json({ products, categories, ordenarPor });
+  }
+
+  const sortSql = sortProducts(sortBy);
+
   try {
-    //modificar query3 segun el orden que se escoge
-    if (sortBy === "nombreA") {
-      var query3 = `${query} '${id}' ORDER BY name`;
-    } else if (sortBy === "nombreD") {
-      var query3 = `${query} '${id}' ORDER BY name DESC`;
-    } else if (sortBy === "precioA") {
-      var query3 = `${query} '${id}' ORDER BY price DESC`;
-    } else if (sortBy === "precioD") {
-      var query3 = `${query} '${id}' ORDER BY price`;
-    } else {
-      var query3 = `${query} '${id}'`;
+    const query = await conectando.query(`${sortSql}`, [id]);
+
+    if (!query || query.length === 0) {
+      return res.json({ products, categories, ordenarPor });
     }
-    conectando.query(query3, async (err, products) => {
-      if (err) res.json({ status: 500, err });
-      await conectando.query(query2, (err, categories) => {
-        if (err) res.json({ status: 500, err });
-        res.json({ products, categories, ordenarPor });
-      });
-    });
+    return res.json({ products: query, categories, ordenarPor });
   } catch (err) {
     console.log(err);
+    return res.json({ products, categories, ordenarPor });
   }
 };

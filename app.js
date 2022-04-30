@@ -7,12 +7,6 @@ const cors = require("cors");
 //importanto las rutas
 const eroski = require("./routes/eroskiRoutes");
 
-//Conectar a la base de datos
-conectando.connect((err) => {
-  if (err) throw err;
-  console.log("Conectado a la base");
-});
-
 //Lista blanca con las rutas permitidas para hacer consultas al backend
 const whiteList = ["http://localhost:3000", "https://api-eroski.herokuapp.com"];
 app.use(cors({ origin: whiteList }));
@@ -31,6 +25,6 @@ app.listen(port, () => {
 });
 
 //keep alive
-setInterval(function () {
-  conectando.query("SELECT 1");
+setInterval(async function () {
+  const query = await conectando.query("SELECT 1");
 }, 4000);
