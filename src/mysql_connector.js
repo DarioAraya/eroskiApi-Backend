@@ -1,16 +1,16 @@
-const mysql = require('mysql');
-const dotenv = require('dotenv');
+//importando libreria mysql
+const mysql = require("mysql");
+//importando libreria dotenv
+const dotenv = require("dotenv");
 dotenv.config();
 
+//funcion para conectarse a la base de datos
+const connection = mysql.createConnection({
+  host: process.env.HOST,
+  database: process.env.DATABASE,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+});
 
-const connection= mysql.createConnection({
- host:process.env.HOST,
- database:process.env.DATABASE,
- user:process.env.USER,
- password:process.env.PASSWORD
-})
-
-
-
-
-module.exports=connection;
+//exportar funcion;
+module.exports = connection;

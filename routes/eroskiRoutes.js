@@ -1,5 +1,9 @@
+//importando express
 const express = require("express");
+//importando metodo router
 const router = express.Router();
+
+//destructurar metodos del controller
 const {
   getAll,
   findForName,
@@ -19,4 +23,5 @@ router.post("/filter-by-cat", findByCat);
 //ordenar por
 router.post("/sort-by", sortBy);
 
+//exportar router
 module.exports = router;

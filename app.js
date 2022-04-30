@@ -1,20 +1,25 @@
+//importando express
 const express = require("express");
 const app = express();
-const path = require("path");
+//importando el metodo para conectar a la base
 const conectando = require("./src/mysql_connector.js");
 const cors = require("cors");
+//importanto las rutas
 const eroski = require("./routes/eroskiRoutes");
 
+//Conectar a la base de datos
 conectando.connect((err) => {
   if (err) throw err;
   console.log("Conectado a la base");
 });
 
+//Lista blanca con las rutas permitidas para hacer consultas al backend
 const whiteList = ["http://localhost:3000", "https://api-eroski.herokuapp.com"];
-
 app.use(cors({ origin: whiteList }));
 
+//parsear json
 app.use(express.json());
+//recibir parametros a traves de query
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/", eroski);
