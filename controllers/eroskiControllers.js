@@ -6,7 +6,7 @@ const ordenarPor = ["nombreA", "nombreD", "precioA", "precioD"];
 let query = `SELECT * FROM product where category = `;
 let query2 = "SELECT * FROM category";
 let query3 = "SELECT * from product where name LIKE";
-
+("a");
 //Mostrar todos los productos de la categoria inicial
 module.exports.getAll = async (req, res, next) => {
   let id = 1; //Se inicializa el id en 1 ya que es la primera categoria a mostrar
@@ -31,11 +31,29 @@ module.exports.findForName = async (req, res, next) => {
   let name = req.body.name;
   //para traer el valor de la variable name en el body
   let id = req.body.id;
+  //Evitar que los parametros vengan vacios
+  if (!req.body.name) {
+    return res.status(400).json({
+      status_code: 0,
+      error_msg: "Require Params Missing",
+    });
+  }
+  if (!req.body.id) {
+    return res.status(400).json({
+      status_code: 0,
+      error_msg: "Require Params Missing",
+    });
+  }
   try {
     //este if sirve para evitar un error en el input buscar, ya que poner comillas o doble comillas produce conflicto con las querys
-    if (name.indexOf('"') != -1) {
+    if (name.includes('"')) {
       name = name.replace(/['"]+/g, "");
     }
+    if (name.includes("'")) {
+      name = name.replace(/["']+/g, "");
+    }
+
+    console.log(name);
     await conectando.query(
       //query para filtrar por nombre y mantenerse en la categoria.
       `${query3} '%${name}%' AND category=${id}`,
