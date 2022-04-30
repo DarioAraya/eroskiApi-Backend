@@ -32,13 +32,7 @@ module.exports.findForName = async (req, res, next) => {
   //para traer el valor de la variable name en el body
   let id = req.body.id;
   //Evitar que los parametros vengan vacios
-  if (!req.body.name) {
-    return res.status(400).json({
-      status_code: 0,
-      error_msg: "Require Params Missing",
-    });
-  }
-  if (!req.body.id) {
+  if (!name || !id) {
     return res.status(400).json({
       status_code: 0,
       error_msg: "Require Params Missing",
